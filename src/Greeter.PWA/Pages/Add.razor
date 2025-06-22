@@ -1,0 +1,91 @@
+﻿@using System.Text.Json
+<div class="flex-col f1" style="gap:2rem;overflow:auto;max-height:calc(100dvh - env(safe-area-inset-bottom));scrollbar-width:none">
+    <div class="flex jcsb aifs">
+        <div class="flex-col g4">
+            <h4>Add an event</h4>
+            <small class="muted-color">You can modify from the event's list, once added.</small>
+        </div>
+    </div>
+    <div class="flex-col">
+        <Input Id="focusElement" Focus Label="Event name" Placeholder="eg: Rahul's Birthday" @bind-Value="model.Name" OnBlur="UpdateMessage" />
+        <Input Label="Mobile No. (prefix with country code)" Placeholder="eg: +919000000000" @bind-Value="model.Mobile" Info="This is used to send SMS and/or WhatsApp message." />
+        <Group Label="Event Date" Info="Day and month is enough, if you don't have exact date.">
+            @if (showNativeDate)
+            {
+                <input type="date" @bind="model.Date" class="sbcinput" />
+            }
+            else
+            {
+                <DatePicker Format="dd MMMM, yyyy" Date="@model.Date" DateChanged="x => model.Date = x.GetValueOrDefault()" />
+            }
+        </Group>
+        <Textarea Label="Message to send" Placeholder="eg: Message you want to send ..." @bind-Text="model.Message" Rows="7" />
+    </div>
+    <div class="flex jcc">
+        <Button Text="Save Event" OnClick="AddEvent" />
+        <Button Text="Go Back" Type="ButtonType.Outline" OnClick="OnClose" />
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    List<EventModel> models = [];
+    EventModel model = new() { Date = DateTime.Now.Date };
+    bool showNativeDate;
+
+    string birthday = "🎉🎂 Happy Birthday! 🎈💖\nWishing you a day full of laughter 😂, love 💕, cake 🍰, and magic ✨!\nStay awesome 😎 and keep shining 🌟! 🎁🎊";
+    string anniversary = "💍❤️ Happy Anniversary! 🥂🌹\nWishing you both endless love 💑, laughter 😂, and a lifetime of beautiful memories 🌟.\nMay your bond grow stronger with each passing year! 💖🎊🎉";
+
+    protected override async Task OnInitializedAsync()
+    {
+        showNativeDate = await browserExtensions.IsTouchDevice();
+        await LoadEvents();
+        await browserExtensions.SetFocus("#focusElement");
+    }
+
+    private void UpdateMessage()
+    {
+        if (string.IsNullOrWhiteSpace(model.Mobile))
+        {
+            model.Mobile = "+";
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Message))
+        {
+            model.Message = model.Name.ToLower().Contains("birthday")
+                ? birthday : model.Name.ToLower().Contains("anni")
+                ? anniversary : string.Empty;
+        }
+    }
+
+    private async Task AddEvent()
+    {
+        if (model.Mobile.Length < 5) model.Mobile = "";
+
+        var eventExists = models.Any(x =>
+            x.Mobile.Equals(model.Mobile, StringComparison.OrdinalIgnoreCase) &&
+            x.Date.Day == model.Date.Day && x.Date.Month == model.Date.Month);
+
+        if (eventExists || string.IsNullOrWhiteSpace(model.Name) || string.IsNullOrWhiteSpace(model.Message)) return;
+
+        models.Add(model);
+        model = new() { Date = DateTime.Now.Date };
+        await browserExtensions.SetFocus("#focusElement");
+        var json = JsonSerializer.Serialize(models);
+        await browserExtensions.SetToLocalStorage("events", json);
+    }
+
+    private async Task LoadEvents()
+    {
+        var json = await browserExtensions.GetFromLocalStorage("events");
+        if (string.IsNullOrWhiteSpace(json)) return;
+        models = JsonSerializer.Deserialize<List<EventModel>>(json) ?? [];
+        if (models.Count > 0)
+        {
+            var today = DateTime.Now;
+            var todaysEvents = models.Where(x => x.Date.Day == today.Day && x.Date.Month == today.Month).ToArray();
+        }
+    }
+}

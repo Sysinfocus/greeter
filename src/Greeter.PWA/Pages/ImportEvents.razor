@@ -1,0 +1,83 @@
+@using System.Text
+@using System.Text.Json
+<div class="flex-col" style="gap:2rem">
+    <div class="flex-col g4">
+        <h4>Import Events</h4>
+        <small class="muted-color">Add missing events or keep only imported events.</small>
+    </div>
+
+    <div class="flex-col">
+        <Group Label="How do you want to Import?" Info="Checking this will keep just the imported events. Else, only the missing events will be added to the existing list of events.">
+            <Checkbox Label="Clear existing" Checked="@clearAll" OnClick="x => clearAll = x" />
+        </Group>
+        <FileUpload AllowedFileTypes="@([".json"])" Text="Import .json file having events exported from this app."
+            OnUpload="HandleUpload" OnError="HandleError" AllowedFileCount="1" />
+    </div>
+
+    @if (errors is not null)
+    {
+        <Alert Type="AlertType.Destructive" Title="Error" Description="@errors.First().Value" Icon="error" />
+    }
+    else if (result)
+    {
+        <Alert Type="AlertType.Success" Title="Import" Description="@message" Icon="check_circle" />
+    }
+</div>
+
+@code
+{
+    bool clearAll;
+    bool result;
+    Dictionary<string, string>? errors;
+    string? message;
+
+    private async Task HandleUpload(IReadOnlyList<IBrowserFile> files)
+    {
+        errors = null;
+        result = false;
+        var file = files[0];
+        using var stream = file.OpenReadStream(1024 * 1024);
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+        var json = Encoding.UTF8.GetString(ms.ToArray());
+        var importedEvents = JsonSerializer.Deserialize<EventModel[]>(json);
+        if (importedEvents is null || importedEvents.Length == 0) return;
+
+        int count = 0;
+        if (clearAll)
+        {
+            count = importedEvents.Length;
+            await browserExtensions.SetToLocalStorage("events", json);
+        }
+        else
+        {
+            var existingEventsJson = await browserExtensions.GetFromLocalStorage("events");
+            var existingEvents = string.IsNullOrWhiteSpace(existingEventsJson)
+                ? Array.Empty<EventModel>()
+                : JsonSerializer.Deserialize<EventModel[]>(existingEventsJson) ?? Array.Empty<EventModel>();
+            
+            foreach(var importedEvent in importedEvents)
+            {
+                if (existingEvents.Any(e => e.Mobile == importedEvent.Mobile &&
+                    e.Date.Day == importedEvent.Date.Day &&
+                    e.Date.Month == importedEvent.Date.Month))
+                {
+                    continue;
+                }
+                count++;
+                existingEvents = existingEvents.Append(importedEvent).ToArray();
+            }
+            await browserExtensions.SetToLocalStorage("events", JsonSerializer.Serialize(existingEvents));
+        }
+        result = true;
+        if (count == 0)
+            message = "No new events to import.";
+        else
+            message = $"Successfully imported {count} events."; 
+    }
+
+    private void HandleError(Dictionary<string, string>? error)
+    {
+        errors = error;
+    }
+}

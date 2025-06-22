@@ -1,0 +1,207 @@
+﻿@page "/"
+@implements IDisposable
+@using System.Text.Json
+@using System.Text
+
+<PageTitle>Home</PageTitle>
+
+<style>
+    p {
+        opacity: 0.75
+    }
+
+    .menu {
+        position: fixed;
+        border: 1px solid var(--primary-border);
+        border-bottom: 2px solid var(--primary-border);
+        background: linear-gradient(125deg, #ddd9, #ccc9, #eee9);
+        backdrop-filter: blur(1rem);
+        -webkit-backdrop-filter: blur(1rem);
+        border-radius: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(1rem + env(safe-area-inset-bottom));
+        padding: 1rem 1.5rem;
+        justify-self: center;
+        user-select: none;
+        transition: 250ms ease-in-out;
+    }
+
+    .dark .menu {
+        background: linear-gradient(125deg, #2229, #3339, #1119);
+    }
+
+    .sub-header {
+        width: 100%;
+        height: 1.5rem;
+        position: relative;
+    }
+
+        .sub-header::after {
+            content: "";
+            position: absolute;
+            color: inherit;
+            left: -1rem;
+            top: -1.5rem;
+            width: 0.5rem;
+            height: 1.5rem;
+            box-shadow: 0 0,0 20px;
+        }
+
+    .active {
+        position:relative;
+        animation: slideIn 250ms ease-out forwards;
+    }
+
+    .inactive {
+        animation: slideOut 250ms ease-in forwards;
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes slideOut {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-150%);
+        }
+    }
+</style>
+
+<div class="flex-col" style="gap:2rem">
+    <div class="flex jcsb aifs">
+        <div class="flex g8">
+            <img style="margin-top:-1rem" width="32" src="icon.png" />
+            <div class="flex-col g0">
+                <h2>Greeter</h2>
+                <small class="muted-color">Simple and elegant way to greet!</small>
+            </div>
+        </div>
+        <Icon Name="@(initialization.CurrentTheme == "light" ? "dark_mode" : "light_mode")"
+              Tooltip="Toggle Theme" OnClick="ToggleTheme" />
+    </div>
+
+
+    <div>
+        @if (selectedMenu == 0 || selectedMenu == 5)
+        {
+            <Events />
+        }
+        else if (selectedMenu == 1)
+        {
+            <Add OnClose="() => selectedMenu = 2" />
+        }
+        else if (selectedMenu == 2)
+        {
+            <Welcome />
+        }
+        else if (selectedMenu == 3)
+        {
+            <Upload />
+        }
+        else if (selectedMenu == 4)
+        {
+            <ImportEvents />
+        }
+    </div>
+</div>
+
+<div class="menu" style="@((selectedMenu == 1 || selectedMenu == 5) ? "opacity:0;pointer-events:none;": null)">
+    <div class="flex jcc aic" style="gap: 2rem">
+        <Icon Name="list" Color="@(selectedMenu == 0 ? "crimson" : "var(--primary-fg)")"
+              Size="@(selectedMenu == 0 ? "32px" : "24px")" Tooltip="Events"
+              OnClick="@(async () => await LoadMenu(0))" />
+        <Icon Name="add_circle" Color="@(selectedMenu == 1 ? "crimson" : "var(--primary-fg)")"
+              Size="@(selectedMenu == 1 ? "32px" : "24px")" Tooltip="Add Event"
+              OnClick="@(async () => await LoadMenu(1))" />
+        <Icon Name="home" Color="@(selectedMenu == 2 ? "crimson" : "var(--primary-fg)")"
+              Size="@(selectedMenu == 2 ? "32px" : "24px")" Tooltip="Home"
+              OnClick="@(async () => await LoadMenu(2))" />
+        <Icon Name="upload" Color="@(selectedMenu == 3 ? "crimson" : "var(--primary-fg)")"
+              Size="@(selectedMenu == 3 ? "32px" : "24px")" Tooltip="Export Events"
+              OnClick="@(async () => await LoadMenu(3))" />
+        <Icon Name="download" Color="@(selectedMenu == 4 ? "crimson" : "var(--primary-fg)")"
+              Size="@(selectedMenu == 4 ? "32px" : "24px")" Tooltip="Import Events"
+              OnClick="@(async () => await LoadMenu(4))" />
+    </div>
+</div>
+
+<SaveFilePicker @ref="sfp" SuggestedName="greeter.json" />
+
+@code
+{
+    SaveFilePicker? sfp;
+    int selectedMenu = -1;
+    string? active = "active";
+
+    EventModel[] events = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        stateManager.StateChanged += HandleStateChange;
+        await LoadMenu(2);
+    }
+
+    private async void HandleStateChange(object sender, object value)
+    {
+        if (sender.ToString() == "update")
+        {
+            selectedMenu = int.Parse(value.ToString()!);
+            // await LoadMenu(5);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task LoadMenu(int menu)
+    {
+        if (menu == 3)
+        {
+            var json = await browserExtensions.GetFromLocalStorage("events");
+            if (string.IsNullOrWhiteSpace(json) || sfp is null)
+            {
+                return;
+            }
+            await sfp.SaveFile(Encoding.UTF8.GetBytes(json));
+            return; // No need to reload the same menu
+        }
+
+        active = "inactive";
+        await Task.Delay(250);
+        selectedMenu = menu;
+        active = "active";
+    }
+
+    private async Task ToggleTheme()
+    {
+        await initialization.ToggleTheme();
+        var currentTheme = initialization.CurrentTheme;
+        var color = currentTheme == "light" ? "#fff" : "#111";
+        await browserExtensions.EvalVoid($"document.querySelector('meta[name=theme-color]').content = '{color}'");
+        StateHasChanged();
+    }
+
+    private async Task<EventModel[]> LoadEvents()
+    {
+        var json = await browserExtensions.GetFromLocalStorage("events");
+        if (string.IsNullOrWhiteSpace(json)) return [];
+        var models = JsonSerializer.Deserialize<EventModel[]>(json) ?? [];
+        return models;
+    }
+
+    public void Dispose()
+    {
+        stateManager.StateChanged -= HandleStateChange;
+    }
+}
