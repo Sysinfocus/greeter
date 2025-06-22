@@ -89,8 +89,11 @@
                 <small class="muted-color">Simple and elegant way to greet!</small>
             </div>
         </div>
-        <Icon Name="@(initialization.CurrentTheme == "light" ? "dark_mode" : "light_mode")"
-              Tooltip="Toggle Theme" OnClick="ToggleTheme" />
+        <div class="flex aic">
+            <Icon Name="ios_share" Tooltip="Share this app" OnClick="ShareApp" />
+            <Icon Name="@(initialization.CurrentTheme == "light" ? "dark_mode" : "light_mode")"
+                  Tooltip="Toggle Theme" OnClick="ToggleTheme" />
+        </div>
     </div>
 
 
@@ -198,6 +201,16 @@
         if (string.IsNullOrWhiteSpace(json)) return [];
         var models = JsonSerializer.Deserialize<EventModel[]>(json) ?? [];
         return models;
+    }
+
+    private async Task ShareApp()
+    {
+        var data = new
+        {            
+            text = "Check out this amazing Greeter app @ https://sysinfocus.github.io/greeter",
+            title = "Sysinfocus Greeter"
+        };
+        await browserExtensions.InvokeShare(data);
     }
 
     public void Dispose()
