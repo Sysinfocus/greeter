@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "hxCC+8Ng",
+  "version": "3OPB9wWX",
   "assets": [
     {
       "hash": "sha256-pw4ZBJj8JCutTmD2ehOjSZeBkduE1EkjNT/wwVYLfdg=",
@@ -98,8 +98,8 @@ self.assetsManifest = {
       "url": "_content/Sysinfocus.AspNetCore.Components/styles.css"
     },
     {
-      "hash": "sha256-HsDrQw5fQcjHTFJBME9FeBzmNT3VRdWHpXycvXcekeA=",
-      "url": "_framework/Greeter.PWA.2gm18ob8vg.wasm"
+      "hash": "sha256-5As8sMAKoWDjQfm4ytYP2csk4LQn/0KA9KvUONEw/WE=",
+      "url": "_framework/Greeter.PWA.4moqlgokqv.wasm"
     },
     {
       "hash": "sha256-h1S7H9e28XTAVgc+qPPEseRm5G1hz9sWe4dbx9BdaPU=",
@@ -210,16 +210,12 @@ self.assetsManifest = {
       "url": "_framework/System.ObjectModel.ssz5r1bbkc.wasm"
     },
     {
-      "hash": "sha256-/+OD3yJzGfYFTqh+PQr3cSUv428CyjUoTq/inFzejJQ=",
-      "url": "_framework/System.Private.CoreLib.vwqfuo7km7.wasm"
+      "hash": "sha256-IY3hrAYVnHI6BYw8U47lalOjqeaUNe2RF++tJZCE8DM=",
+      "url": "_framework/System.Private.CoreLib.5bhqz8595e.wasm"
     },
     {
       "hash": "sha256-8MUBpwWkYNSynkWYJ+T3HE6RC1sCoYgxGV5EVtjbK7s=",
       "url": "_framework/System.Private.Uri.4r8v8tajpq.wasm"
-    },
-    {
-      "hash": "sha256-PBCjHyBZpGtbXFNhO1P3S0tBHkilQDKFkAPVttlgGOM=",
-      "url": "_framework/System.Runtime.0fmbm1tyfx.wasm"
     },
     {
       "hash": "sha256-7s5Unc47t4I9CwoI8FKoMtA60LapOYTnlJd80fameEI=",
@@ -228,6 +224,10 @@ self.assetsManifest = {
     {
       "hash": "sha256-o9TYS1cOs+zSxdLbZRl/3dOSXBTUkZ+VGv4sJ86qi/U=",
       "url": "_framework/System.Runtime.InteropServices.pt770ios6x.wasm"
+    },
+    {
+      "hash": "sha256-A6pUBXvnC1tk6OW/2el5MBjDrruKypcK3twXGmJS6vw=",
+      "url": "_framework/System.Runtime.nnbwvm5n2d.wasm"
     },
     {
       "hash": "sha256-3cJRUrFjSoiaGlI3OmHNndawtN8Y5lEgLHYI76jlAvo=",
@@ -250,7 +250,7 @@ self.assetsManifest = {
       "url": "_framework/System.cunp5qiwjj.wasm"
     },
     {
-      "hash": "sha256-WuEltvAdwlMuHxtL93FT9XUbhFgATzTH+XmI6AqctLM=",
+      "hash": "sha256-l+chi2/X2xY28oUnt+0HJuDSYsqjNsDXaEBJGnt5v9k=",
       "url": "_framework/blazor.boot.json"
     },
     {
