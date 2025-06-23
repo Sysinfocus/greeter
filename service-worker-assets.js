@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "3OPB9wWX",
+  "version": "2og8/4o0",
   "assets": [
     {
       "hash": "sha256-pw4ZBJj8JCutTmD2ehOjSZeBkduE1EkjNT/wwVYLfdg=",
@@ -98,8 +98,8 @@ self.assetsManifest = {
       "url": "_content/Sysinfocus.AspNetCore.Components/styles.css"
     },
     {
-      "hash": "sha256-5As8sMAKoWDjQfm4ytYP2csk4LQn/0KA9KvUONEw/WE=",
-      "url": "_framework/Greeter.PWA.4moqlgokqv.wasm"
+      "hash": "sha256-YrEtJqW3CIi7LP2Ct07ju2tpZhSHeBJLWC1W/MvUdC4=",
+      "url": "_framework/Greeter.PWA.q5p9nopgqu.wasm"
     },
     {
       "hash": "sha256-h1S7H9e28XTAVgc+qPPEseRm5G1hz9sWe4dbx9BdaPU=",
@@ -250,7 +250,7 @@ self.assetsManifest = {
       "url": "_framework/System.cunp5qiwjj.wasm"
     },
     {
-      "hash": "sha256-l+chi2/X2xY28oUnt+0HJuDSYsqjNsDXaEBJGnt5v9k=",
+      "hash": "sha256-pVk8qpvdwpHrTahi/1fSY8XjPt9Uzc+zSzO8ZfA5cqs=",
       "url": "_framework/blazor.boot.json"
     },
     {
