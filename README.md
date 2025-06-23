@@ -1,2 +1,2 @@
-# greeter
-A simple app to manage events to greet
+# Sysinfocus Greeter
+A simple app to manage events to greet.
