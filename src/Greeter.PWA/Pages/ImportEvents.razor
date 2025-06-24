@@ -1,5 +1,6 @@
 @using System.Text
 @using System.Text.Json
+@using Greeter.PWA.Services
 <div class="flex-col" style="gap:2rem">
     <div class="flex-col g4">
         <h4>Import Events</h4>
@@ -10,7 +11,7 @@
         <Group Label="How do you want to Import?" Info="Checking this will keep just the imported events. Else, only the missing events will be added to the existing list of events.">
             <Checkbox Label="Clear existing" Checked="@clearAll" OnClick="x => clearAll = x" />
         </Group>
-        <FileUpload AllowedFileTypes="@([".json"])" Text="Import .json file having events exported from this app."
+        <FileUpload AllowedFileTypes="@([".json",".txt"])" Text="Import .json or .txt file having events exported from this app."
             OnUpload="HandleUpload" OnError="HandleError" AllowedFileCount="1" />
     </div>
 
@@ -51,33 +52,22 @@
         }
         else
         {
-            var existingEventsJson = await browserExtensions.GetFromLocalStorage("events");
-            var existingEvents = string.IsNullOrWhiteSpace(existingEventsJson)
-                ? Array.Empty<EventModel>()
-                : JsonSerializer.Deserialize<EventModel[]>(existingEventsJson) ?? Array.Empty<EventModel>();
-            
+            var existingEvents = await greeterService.LoadEvents();
             foreach(var importedEvent in importedEvents)
             {
                 if (existingEvents.Any(e => e.Mobile == importedEvent.Mobile &&
                     e.Date.Day == importedEvent.Date.Day &&
-                    e.Date.Month == importedEvent.Date.Month))
-                {
-                    continue;
-                }
+                    e.Date.Month == importedEvent.Date.Month)) continue;
+
                 count++;
                 existingEvents = existingEvents.Append(importedEvent).ToArray();
             }
-            await browserExtensions.SetToLocalStorage("events", JsonSerializer.Serialize(existingEvents));
+            await greeterService.SaveEvents(existingEvents);
         }
         result = true;
-        if (count == 0)
-            message = "No new events to import.";
-        else
-            message = $"Successfully imported {count} events."; 
+        
+        message = count == 0 ? "No new events to import." : $"Successfully imported {count} events."; 
     }
 
-    private void HandleError(Dictionary<string, string>? error)
-    {
-        errors = error;
-    }
+    private void HandleError(Dictionary<string, string>? error) => errors = error;
 }

@@ -1,4 +1,5 @@
 ﻿@using System.Text.Json
+
 <div class="flex-col f1" style="gap:2rem;overflow:auto;max-height:calc(100dvh - env(safe-area-inset-bottom));scrollbar-width:none">
     <div class="flex jcsb aifs">
         <div class="flex-col g4">
@@ -31,7 +32,7 @@
 {
     [Parameter] public EventCallback OnClose { get; set; }
 
-    List<EventModel> models = [];
+    ICollection<EventModel> models = [];
     EventModel model = new() { Date = DateTime.Now.Date };
     bool showNativeDate;
 
@@ -41,7 +42,7 @@
     protected override async Task OnInitializedAsync()
     {
         showNativeDate = await browserExtensions.IsTouchDevice();
-        await LoadEvents();
+        models = await greeterService.LoadEvents();
         await browserExtensions.SetFocus("#focusElement");
     }
 
@@ -54,7 +55,7 @@
 
         if (string.IsNullOrWhiteSpace(model.Message))
         {
-            model.Message = model.Name.ToLower().Contains("birthday")
+            model.Message = model.Name.ToLower().Contains("birth")
                 ? birthday : model.Name.ToLower().Contains("anni")
                 ? anniversary : string.Empty;
         }
@@ -73,19 +74,18 @@
         models.Add(model);
         model = new() { Date = DateTime.Now.Date };
         await browserExtensions.SetFocus("#focusElement");
-        var json = JsonSerializer.Serialize(models);
-        await browserExtensions.SetToLocalStorage("events", json);
+        await greeterService.SaveEvents(models);
     }
 
-    private async Task LoadEvents()
-    {
-        var json = await browserExtensions.GetFromLocalStorage("events");
-        if (string.IsNullOrWhiteSpace(json)) return;
-        models = JsonSerializer.Deserialize<List<EventModel>>(json) ?? [];
-        if (models.Count > 0)
-        {
-            var today = DateTime.Now;
-            var todaysEvents = models.Where(x => x.Date.Day == today.Day && x.Date.Month == today.Month).ToArray();
-        }
-    }
+    // private async Task LoadEvents()
+    // {
+    //     var json = await browserExtensions.GetFromLocalStorage("events");
+    //     if (string.IsNullOrWhiteSpace(json)) return;
+    //     models = JsonSerializer.Deserialize<List<EventModel>>(json) ?? [];
+    //     if (models.Count > 0)
+    //     {
+    //         var today = DateTime.Now;
+    //         var todaysEvents = models.Where(x => x.Date.Day == today.Day && x.Date.Month == today.Month).ToArray();
+    //     }
+    // }
 }

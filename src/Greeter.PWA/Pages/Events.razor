@@ -1,30 +1,28 @@
-@using System.Text.Json
-
 @if (selectedEvent is null)
 {
-<div class="flex-col f1" style="gap:2rem;overflow:auto;max-height:calc(100dvh - 220px - env(safe-area-inset-bottom));scrollbar-width:none">
-    <div class="flex-col g4">
-        <h4>Events</h4>
-        <small class="muted-color">List of existing events</small>
-    </div>
+    <div class="flex-col f1" style="gap:2rem;overflow:auto;max-height:calc(100dvh - 220px - env(safe-area-inset-bottom));scrollbar-width:none">
+        <div class="flex-col g4">
+            <h4>Events</h4>
+            <small class="muted-color">List of existing events</small>
+        </div>
 
-    @if (events.Count == 0)
-    {
-        <small class="muted-color">No events.</small>
-    }
-
-    <div class="flex-col g0">
-        @foreach (var evt in events)
+        @if (events.Count == 0)
         {
-            <div class="flex jcsb aic">
-                <p>@evt.Name</p>
-                <div class="flex aic">
-                    <Button Icon="edit" Type="ButtonType.Ghost" Style="padding:4px; color: royalblue" Tooltip="Edit" OnClick="() => HandleUpdate(evt)" />
-                    <Button Icon="delete" Type="ButtonType.Ghost" Style="padding:4px; color: crimson" Tooltip="Delete" OnClick="async () => await HandleDelete(evt)" />
-                </div>
-            </div>
+            <small class="muted-color">No events.</small>
         }
-    </div>
+
+        <div class="flex-col g0">
+            @foreach (var evt in events)
+            {
+                <div class="flex jcsb aic">
+                    <p>@evt.Name</p>
+                    <div class="flex aic">
+                        <Button Icon="edit" Type="ButtonType.Ghost" Style="padding:4px; color: royalblue" Tooltip="Edit" OnClick="() => HandleUpdate(evt)" />
+                        <Button Icon="delete" Type="ButtonType.Ghost" Style="padding:4px; color: crimson" Tooltip="Delete" OnClick="async () => await HandleDelete(evt)" />
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 }
 else
@@ -34,22 +32,10 @@ else
 
 @code
 {
-    List<EventModel> events = [];
+    ICollection<EventModel> events = [];
     EventModel? selectedEvent;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        events = await LoadEvents();
-    }
-
-    private async Task<List<EventModel>> LoadEvents()
-    {
-        var json = await browserExtensions.GetFromLocalStorage("events");
-        if (string.IsNullOrWhiteSpace(json)) return [];
-        var models = JsonSerializer.Deserialize<EventModel[]>(json) ?? [];
-        return models.OrderBy(x => x.Date.Month).ThenBy(x => x.Date.Day).ToList();
-    }
+    protected override async Task OnInitializedAsync() => events = await greeterService.LoadEvents();
 
     private void HandleUpdate(EventModel evt)
     {
@@ -61,13 +47,12 @@ else
     {
         stateManager.Publish("update", 0);
         selectedEvent = null;
-        events = await LoadEvents();
+        events = await greeterService.LoadEvents();
     }
 
     private async Task HandleDelete(EventModel evt)
     {
         events.Remove(evt);
-        var json = JsonSerializer.Serialize(events);
-        await browserExtensions.SetToLocalStorage("events", json);
+        await greeterService.SaveEvents(events);
     }
 }

@@ -1,5 +1,4 @@
-﻿@using System.Text.Json
-<div class="flex-col f1" style="gap:2rem;overflow:auto;max-height:calc(100dvh - env(safe-area-inset-bottom));scrollbar-width:none">
+﻿<div class="flex-col f1" style="gap:2rem;overflow:auto;max-height:calc(100dvh - env(safe-area-inset-bottom));scrollbar-width:none">
     <div class="flex jcsb aifs">
         <div class="flex-col g4">
             <h4>Update event</h4>
@@ -32,8 +31,7 @@
     [Parameter] public EventModel Model { get; set; } = default!;
     [Parameter] public EventCallback OnClose { get; set; }
 
-    List<EventModel> Models = [];
-    // EventModel Model = new();
+    ICollection<EventModel> Models = [];
     bool showNativeDate;
 
     string birthday = "🎉🎂 Happy Birthday! 🎈💖\nWishing you a day full of laughter 😂, love 💕, cake 🍰, and magic ✨!\nStay awesome 😎 and keep shining 🌟! 🎁🎊";
@@ -44,7 +42,7 @@
         showNativeDate = await browserExtensions.IsTouchDevice();
         stateManager.Publish("update", 5);
 
-        await LoadEvents();
+        Models = await greeterService.LoadEvents();
 
         var found = Models.FirstOrDefault(x =>
             x.Name == Model.Name &&
@@ -58,10 +56,7 @@
 
     private void UpdateMessage()
     {
-        if (string.IsNullOrWhiteSpace(Model.Mobile))
-        {
-            Model.Mobile = "+";
-        }
+        if (string.IsNullOrWhiteSpace(Model.Mobile)) Model.Mobile = "+";
 
         if (string.IsNullOrWhiteSpace(Model.Message))
         {
@@ -82,20 +77,7 @@
         if (eventExists || string.IsNullOrWhiteSpace(Model.Name) || string.IsNullOrWhiteSpace(Model.Message)) return;
 
         Models.Add(Model);
-        var json = JsonSerializer.Serialize(Models);
-        await browserExtensions.SetToLocalStorage("events", json);
+        await greeterService.SaveEvents(Models);
         await OnClose.InvokeAsync();
-    }
-
-    private async Task LoadEvents()
-    {
-        var json = await browserExtensions.GetFromLocalStorage("events");
-        if (string.IsNullOrWhiteSpace(json)) return;
-        Models = JsonSerializer.Deserialize<List<EventModel>>(json) ?? [];
-        if (Models.Count > 0)
-        {
-            var today = DateTime.Now;
-            var todaysEvents = Models.Where(x => x.Date.Day == today.Day && x.Date.Month == today.Month).ToArray();
-        }
-    }
+    }    
 }

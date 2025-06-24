@@ -1,4 +1,4 @@
-﻿namespace Greeter.PWA.Pages;
+﻿namespace Greeter.PWA.Services;
 public class EventModel
 {
     public string Name { get; set; } = string.Empty;

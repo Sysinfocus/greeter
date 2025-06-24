@@ -1,3 +1,4 @@
+using Greeter.PWA.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Sysinfocus.AspNetCore.Components;
@@ -7,6 +8,7 @@ builder.RootComponents.Add<Greeter.PWA.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped<GreeterService>();
 builder.Services.AddSysinfocus();
 
 await builder.Build().RunAsync();

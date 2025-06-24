@@ -1,0 +1,64 @@
+<div class="flex-col" style="gap:2rem">
+    <div class="flex-col g4">
+        <h4>Exports Events</h4>
+        <small class="muted-color">Export all or selected events</small>
+    </div>
+
+    @if (events.Count == 0)
+    {
+        <small class="muted-color">No events.</small>
+    }
+    <div class="flex-col">
+        <Checkbox Label="Toggle all" Checked="@toggleSelect" OnClick="ToggleSelect" />
+    </div>
+
+    <div class="flex-col g8">
+        @foreach (var evt in events)
+        {
+            <Checkbox Label="@evt.Model.Name" Checked="@evt.Selected" OnClick="x => evt.Selected = x" />
+        }
+    </div>
+
+    <div class="flex jcc">
+        <Button Text="Export Events" OnClick="HandleExport"
+            Type="@(events.Where(x => x.Selected).Select(x => x.Model).Any() ? ButtonType.Primary : ButtonType.Secondary)"
+            Disabled="@(!events.Where(x => x.Selected).Select(x => x.Model).Any())" />
+        <Button Text="Go Back" Type="ButtonType.Outline" OnClick="OnClose" />
+    </div>
+</div>
+
+<SaveFilePicker @ref="sfp" SuggestedName="greeter.json" />
+
+@code
+{
+    [Parameter] public EventCallback OnClose { get; set; }
+    private ICollection<SelectedEvents> events = [];
+    private bool toggleSelect = true;
+    private SaveFilePicker? sfp;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var currentEvents = await greeterService.LoadEvents();
+        foreach (var ce in currentEvents)
+            events.Add(new(ce) { Selected = true });
+    }
+
+    private void ToggleSelect(bool select)
+    {
+        toggleSelect = select;
+        foreach (var ce in events) ce.Selected = select;
+    }
+
+    private async Task HandleExport()
+    {
+        var selectedEvents = events.Where(x => x.Selected).Select(x => x.Model).ToArray();
+        if (sfp is null || selectedEvents.Length == 0) return;
+        var json = JsonSerializer.Serialize(selectedEvents);
+        await sfp.SaveFile(System.Text.Encoding.UTF8.GetBytes(json));
+    }
+
+    private record SelectedEvents(EventModel Model)
+    {
+        public bool Selected { get; set; }
+    };
+}
