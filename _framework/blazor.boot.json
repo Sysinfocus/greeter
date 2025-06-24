@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Greeter.PWA",
   "resources": {
-    "hash": "sha256-Jg+GpYZG8DsADcVXxr3x96K/TsEoJcQ/mznG1magJuE=",
+    "hash": "sha256-Yu+WqvRtO6wdf8bD4wLYhQACHAMPDmiIRUgnC/JutFc=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Components.fhtwefxm56.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.1uwp5p5vz4.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
@@ -40,7 +40,7 @@
       "System.Threading.zcb42vnja5.wasm": "System.Threading.wasm",
       "System.cunp5qiwjj.wasm": "System.wasm",
       "System.Private.CoreLib.4ktsotg0ob.wasm": "System.Private.CoreLib.wasm",
-      "Greeter.PWA.pl7g3ifbal.wasm": "Greeter.PWA.wasm",
+      "Greeter.PWA.mxy01sa4j0.wasm": "Greeter.PWA.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.rtblh4npr3.js": "dotnet.native.js",
       "dotnet.native.aqhezbunpl.wasm": "dotnet.native.wasm",
@@ -103,7 +103,7 @@
       "System.Text.RegularExpressions.3zydt3n8n9.wasm": "sha256-sXTH9c57ccmOHrE+Bpsiewg0xWGtHrbl8KBKpTJW9VA=",
       "System.Threading.zcb42vnja5.wasm": "sha256-fZ9o2IQTIELEttSIeZ1yev0uL+0qIYnwOC1p/5RM/0k=",
       "System.cunp5qiwjj.wasm": "sha256-DM5iEENhrifGKn33Y7cqRzxC0OtHXYOKO13icwIazj8=",
-      "Greeter.PWA.pl7g3ifbal.wasm": "sha256-g1rLgIRdN5fx0YP//tmRj90yodozUUoGBC8HnBufZb8="
+      "Greeter.PWA.mxy01sa4j0.wasm": "sha256-Jh55yWtasKOUaEjD2F4Et4ozlAEvxOpZftmaeV+vh88="
     }
   },
   "cacheBootResources": true,
