@@ -65,6 +65,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        eventsUpcomingDays = int.Parse(await browserExtensions.GetFromLocalStorage("upcomingEventsDays") ?? "10");
         models = await greeterService.LoadEvents();
         EvaluateEvents(models);
     }
@@ -91,6 +92,7 @@
         eventsUpcomingDays = days;
         await greeterService.LoadEvents();
         EvaluateEvents(models);
+        await browserExtensions.SetToLocalStorage("upcomingEventsDays", eventsUpcomingDays.ToString());
         await InvokeAsync(StateHasChanged);
     }    
 }
