@@ -4,19 +4,19 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="A simple app to manage events to greet" />
+    <meta name="description" content="A simple app to manage events to greet!" />
     <title>Sysinfocus Greeter</title>
     <base href="" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="stylesheet" href="css/app.css?v1" />
+    <link href="manifest.webmanifest?v1" rel="manifest" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#ffffff" />
-    <link rel="icon" href="icon.png" />
-    <link rel="shortcut icon" href="icon.png" />
-    <link rel="apple-touch-icon" href="192.png" />
-    <link rel="apple-touch-icon" sizes="512x512" href="512.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="192.png" />
+    <link rel="icon" href="favicon-32x32.png" />
+    <link rel="shortcut icon" href="favicon-32x32.png" />    
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="_content/Sysinfocus.AspNetCore.Components/styles.css" />
@@ -25,7 +25,14 @@
 </head>
 
 <body>
-    <div id="app"></div>
+    <div id="app">
+        <div style="display:grid;place-content:center;place-items:center;text-align:center;height:100dvh">
+            <img src="android-chrome-192x192.png" width="192" alt="Greeter" />
+            <p>Welcome to</p>
+            <h1>Greeter</h1>
+            <small class="muted-color">A simple app to manage events to greet!</small>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
