@@ -1,6 +1,6 @@
 <div class="flex-col" style="gap:2rem">
     <div class="flex-col g4">
-        <h4>Exports Events</h4>
+        <h4 class="normal"><b>Exports Events</b> (@events.Count)</h4>
         <small class="muted-color">Export all or selected events</small>
     </div>
 
@@ -19,11 +19,14 @@
         }
     </div>
 
-    <div class="flex jcc">
-        <Button Text="Export Events" OnClick="HandleExport"
-            Type="@(events.Where(x => x.Selected).Select(x => x.Model).Any() ? ButtonType.Primary : ButtonType.Secondary)"
-            Disabled="@(!events.Where(x => x.Selected).Select(x => x.Model).Any())" />
-        <Button Text="Go Back" Type="ButtonType.Outline" OnClick="OnClose" />
+    <div class="flex-col aic">
+        <small class="muted-color">You have selected <b>@events.Count(x => x.Selected)</b> events to export.</small>
+        <div class="flex jcc">
+            <Button Text="Export Events" OnClick="HandleExport"
+                Type="@(events.Where(x => x.Selected).Select(x => x.Model).Any() ? ButtonType.Primary : ButtonType.Secondary)"
+                Disabled="@(!events.Where(x => x.Selected).Select(x => x.Model).Any())" />
+            <Button Text="Go Back" Type="ButtonType.Outline" OnClick="OnClose" />
+        </div>
     </div>
 </div>
 
